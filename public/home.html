@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Page</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center">
+
+<nav class="bg-blue-600 text-white px-6 py-4 w-full flex justify-between items-center shadow-md">
+  <h1 class="text-xl font-semibold">Home</h1>
+  <div class="relative">
+    <button onclick="toggleDropdown()">
+      <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white">
+        <img id="profileImage" src="https://www.gravatar.com/avatar/?d=mp" class="object-cover w-full h-full">
+      </div>
+    </button>
+    <div id="dropdownMenu" class="hidden absolute right-0 mt-2 w-48 bg-white text-gray-800 rounded shadow z-50">
+      <a href="profile.html" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"><i class="ph ph-gear"></i>Settings</a>
+      <a href="#" onclick="logout()" class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100"><i class="ph ph-sign-out"></i>Sign out</a>
+    </div>
+  </div>
+</nav>
+
+<div class="w-full max-w-2xl bg-white p-6 mt-8 rounded-2xl shadow-xl text-center">
+  <h1 class="text-3xl font-bold mb-4">Welcome!</h1>
+  <p class="mb-6 text-gray-700">Upload your files below</p>
+  <form id="uploadForm" onsubmit="return validateUpload()" enctype="multipart/form-data">
+    <div class="border border-gray-200 rounded p-4">
+      <div class="mb-4 flex justify-center">
+        <label class="cursor-pointer bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+          <span>Add file</span>
+          <input type="file" multiple class="hidden" onchange="displayFileNames(this)">
+        </label>
+      </div>
+      <table class="table-auto w-full text-left text-sm">
+        <thead>
+          <tr class="bg-gray-200">
+            <th class="px-4 py-2">File</th>
+            <th class="px-4 py-2">Copies</th>
+            <th class="px-4 py-2 text-center">Remove</th>
+          </tr>
+        </thead>
+        <tbody id="file-names"></tbody>
+      </table>
+      <p id="errorMsg" class="text-sm text-red-600 hidden">Please upload at least one file.</p>
+    </div>
+    <button type="submit" class="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Upload Files</button>
+  </form>
+</div>
+
+<script type="module">
+ import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+ import {getAuth,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+ const firebaseConfig={ apiKey:"AIzaSyB3bgWB0qZ2QnH2ZK5mql2S49E_ixZjInQ",authDomain:"printerscheduler-e9e74.firebaseapp.com",projectId:"printerscheduler-e9e74",storageBucket:"printerscheduler-e9e74.appspot.com",messagingSenderId:"11551500034",appId:"1:11551500034:web:ba2f8685038c06dbad041b"};
+ const app=initializeApp(firebaseConfig);
+ const auth=getAuth(app);
+
+ onAuthStateChanged(auth,user=>{
+   if(!user){window.location.href="login.html";}
+ });
+
+ window.logout=()=>{ signOut(auth).then(()=>{localStorage.removeItem("currentUser");window.location.href="login.html"}) }
+
+ // Load avatar from localStorage
+ window.addEventListener("DOMContentLoaded",()=>{
+   const cu=JSON.parse(localStorage.getItem("currentUser")||"{}");
+   if(cu.avatar){
+     document.getElementById("profileImage").src=cu.avatar;
+   }
+ });
+</script>
+
+<script>
+let allFiles=[];
+function displayFileNames(inp){
+  const c=document.getElementById("file-names");
+  const err=document.getElementById("errorMsg");
+  err.classList.add("hidden");
+  Array.from(inp.files).forEach(file=>{
+    allFiles.push(file);
+    const tr=document.createElement("tr");
+    tr.className="bg-gray-50 border-b";
+    tr.innerHTML=`
+      <td class="px-4 py-2">${file.name}</td>
+      <td class="px-4 py-2"><input type="number" value="1" min="1" class="w-20 border rounded"/></td>
+      <td class="px-4 py-2 text-center">
+        <i class="ph ph-trash p-2 bg-red-600 text-white rounded-full cursor-pointer" onclick="this.closest('tr').remove()"></i>
+      </td>
+     `;
+    c.appendChild(tr);
+  });
+  inp.value="";
+}
+function validateUpload(){
+  const c=document.getElementById("file-names");
+  const err=document.getElementById("errorMsg");
+  if(c.children.length===0){ err.classList.remove("hidden");return false;}
+  return true;
+}
+function toggleDropdown(){
+ document.getElementById("dropdownMenu").classList.toggle("hidden");
+}
+window.addEventListener("click",(e)=>{
+ const d=document.getElementById("dropdownMenu");
+ const btn=e.target.closest("button");
+ if(!e.target.closest("#dropdownMenu")&&!btn){ d.classList.add("hidden") }
+});
+</script>
+</body>
+</html>

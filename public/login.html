@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <style>
+    body{
+      background:#D6E6F2;
+      height:100vh;
+      margin:0;
+      font-family:sans-serif;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .box{
+      background:white;
+      width:320px;
+      padding:30px;
+      border-radius:12px;
+      box-shadow:0 5px 12px rgba(0,0,0,0.15);
+    }
+    input{
+      width:100%;
+      padding:12px;
+      margin-bottom:15px;
+      border:1px solid #ccc;
+      border-radius:6px;
+    }
+    button{
+      width:100%;
+      padding:12px;
+      background:#2563eb;
+      color:white;
+      border:none;
+      border-radius:6px;
+      font-weight:bold;
+      cursor:pointer;
+    }
+    button:hover{ background:#1e4fc0; }
+    #msg{ margin-top:10px;text-align:center;font-size:14px;color:red; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2 style="text-align:center;margin-bottom:20px;">Login</h2>
+
+    <input type="text" id="mobile" placeholder="Mobile Number" />
+    <input type="password" id="password" placeholder="Password" />
+    <button id="loginBtn">Login</button>
+    <div id="msg"></div>
+
+    <p style="margin-top:15px;text-align:center;font-size:14px;">
+      Don’t have an account?
+      <a href="signup.html" style="color:#2563EB;">Sign Up</a>
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB3bgWB0qZ2QnH2ZK5mql2S49E_ixZjInQ",
+      authDomain: "printerscheduler-e9e74.firebaseapp.com",
+      projectId: "printerscheduler-e9e74",
+      storageBucket: "printerscheduler-e9e74.appspot.com",
+      messagingSenderId: "11551500034",
+      appId: "1:11551500034:web:ba2f8685038c06dbad041b"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    // Auto–fill last mobile number
+    const last = localStorage.getItem("lastMobile");
+    if(last) document.getElementById("mobile").value = last;
+
+    const $ = (id)=> document.getElementById(id);
+
+    $("loginBtn").addEventListener("click", async ()=>{
+      const mobile  = $("mobile").value.trim();
+      const passInp = $("password").value.trim();
+      const msg     = $("msg");
+
+      if(!mobile || !passInp){
+        msg.textContent="Please enter mobile and password.";
+        return;
+      }
+      msg.textContent="Please wait...";
+
+      const q = query(collection(db,"users"), where("mobile","==",mobile));
+      const snap = await getDocs(q);
+      if(snap.empty){
+        msg.textContent="Mobile number not found.";
+        return;
+      }
+      const data = snap.docs[0].data();
+      if(data.password === passInp){
+        localStorage.setItem("currentUser", JSON.stringify(data));
+        msg.style.color="green";
+        msg.textContent="Login success!";
+        setTimeout(()=> window.location.href="home.html",1000);
+      }else{
+        msg.style.color="red"; msg.textContent="Wrong password.";
+      }
+    });
+  </script>
+</body>
+</html>

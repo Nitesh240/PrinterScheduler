@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Profile</title>
+  <style>
+    body{background:#d6e6f2;height:100vh;display:flex;justify-content:center;align-items:center;font-family:sans-serif;}
+    .container{background:white;width:360px;padding:25px;border-radius:14px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.15);}
+    img.avatar{width:70px;height:70px;border-radius:50%;margin:5px;cursor:pointer;border:3px solid transparent;}
+    img.avatar.selected{border-color:#2563eb;}
+    #mainAvatar{width:120px;height:120px;border-radius:50%;border:4px solid #2563eb;margin-bottom:15px;}
+    input{width:100%;padding:10px;border:1px solid #ccc;border-radius:6px;margin-top:12px;}
+    button{width:100%;padding:12px;background:#2563eb;color:white;border:none;border-radius:8px;margin-top:15px;font-weight:bold;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>Profile</h2>
+  <img id="mainAvatar"><br>
+  <div id="avatarSelect">
+    <!-- embedded cartoon animals -->
+    <img class="avatar" src="https://img.icons8.com/3d-fluency/94/panda.png">
+    <img class="avatar" src="https://img.icons8.com/3d-fluency/94/fox.png">
+    <img class="avatar" src="https://img.icons8.com/3d-fluency/94/dog.png">
+    <img class="avatar" src="https://img.icons8.com/3d-fluency/94/rabbit.png">
+    <img class="avatar" src="https://img.icons8.com/3d-fluency/94/cat.png">
+  </div>
+
+  <input id="name" placeholder="Name">
+  <input id="mobile" placeholder="Mobile" readonly>
+  <button id="saveBtn">Save</button>
+  <br><br>
+  <a href="home.html">← Back to Home</a>
+</div>
+
+<script>
+  // Load existing from localStorage
+  const cu = JSON.parse(localStorage.getItem("currentUser")||"{}");
+  if(!cu.mobile) window.location.href="login.html";
+
+  document.getElementById("name").value = cu.name||"";
+  document.getElementById("mobile").value = cu.mobile||"";
+  const mainAvatar = document.getElementById("mainAvatar");
+  mainAvatar.src = cu.avatar || document.querySelector(".avatar").src;
+
+  // avatar selection
+  const avatars = document.querySelectorAll("img.avatar");
+  avatars.forEach(img=>{
+    if(img.src === cu.avatar){ img.classList.add("selected"); }
+    img.onclick=()=>{
+      avatars.forEach(a=>a.classList.remove("selected"));
+      img.classList.add("selected");
+      mainAvatar.src = img.src;
+    }
+  });
+
+  document.getElementById("saveBtn").onclick=()=>{
+    const updated = {
+      ...cu,
+      name: document.getElementById("name").value,
+      avatar: mainAvatar.src
+    };
+    localStorage.setItem("currentUser", JSON.stringify(updated));
+    alert("Profile updated!");
+  }
+</script>
+</body>
+</html>

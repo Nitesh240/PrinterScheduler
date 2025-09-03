@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Response</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-3xl bg-white p-6 rounded-2xl shadow-xl">
+    <h1 class="text-3xl font-bold text-center mb-6">Print Job Status</h1>
+
+    <h2 class="text-xl font-semibold mb-2">Queue List</h2>
+    <ul class="mb-6 list-disc list-inside text-gray-700">
+      <li>Pending_Resume.pdf</li>
+      <li>Notes_Midterm.docx</li>
+      <li>Report2025.xlsx</li>
+    </ul>
+
+    <table class="table-auto w-full text-left text-sm text-gray-700">
+      <thead>
+        <tr class="bg-gray-200">
+          <th class="px-4 py-2">File Name</th>
+          <th class="px-4 py-2">Copies</th>
+          <th class="px-4 py-2">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="bg-gray-50 border-b">
+          <td class="px-4 py-2">Document1.pdf</td>
+          <td class="px-4 py-2">2</td>
+          <td class="px-4 py-2 text-green-600 font-medium">Printed</td>
+        </tr>
+        <tr class="bg-gray-50 border-b">
+          <td class="px-4 py-2">Screenshot.png</td>
+          <td class="px-4 py-2">1</td>
+          <td class="px-4 py-2 text-yellow-600 font-medium">In Progress</td>
+        </tr>
+        <tr class="bg-gray-50 border-b">
+          <td class="px-4 py-2">Invoice.docx</td>
+          <td class="px-4 py-2">3</td>
+          <td class="px-4 py-2 text-red-600 font-medium">Failed</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
